@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CentroGE - Panel del Profesor</title>
+<style>
+  :root{
+    --blue:#0c2a78;
+    --blue-dark:#081d52;
+    --green:#0a7a3c;
+    --green-dark:#055c2a;
+    --red:#cf2027;
+    --red-dark:#a8181d;
+    --white:#ffffff;
+    --ink:#13202c;
+    --muted:#5b6b78;
+    --border:#dfe3e6;
+    --gold:#f2b705;
+    --sand:#f7f4ec;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ font-family: Arial, Helvetica, sans-serif; background:var(--sand); color:var(--ink); }
+
+  .app{display:flex; min-height:100vh;}
+
+  .sidebar{
+    width:230px;
+    background:var(--blue);
+    color:#cfe0ee;
+    flex-shrink:0;
+    padding:22px 0;
+  }
+  .sidebar .brand{
+    display:flex; align-items:center; gap:10px;
+    padding:0 22px 24px 22px;
+    font-weight:800; font-size:18px; color:white;
+  }
+  .sidebar .brand .mark{
+    width:28px;height:28px;border-radius:7px;
+    background:linear-gradient(135deg, var(--green) 0% 50%, var(--blue-dark) 50% 100%);
+    position:relative;
+    border:1px solid rgba(255,255,255,0.3);
+  }
+  .sidebar .brand .mark::after{
+    content:""; position:absolute; right:0; top:0; width:11px; height:11px;
+    background:var(--red); border-radius:0 7px 0 7px;
+  }
+  .sidebar .group-label{
+    font-size:10px; letter-spacing:0.8px; text-transform:uppercase;
+    color:#7e9bb8; padding:14px 22px 6px 22px;
+  }
+  .sidebar a{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 22px;
+    color:#cfe0ee;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:500;
+    border-left:3px solid transparent;
+  }
+  .sidebar a.active{
+    background:rgba(255,255,255,0.08);
+    border-left:3px solid var(--gold);
+    color:white;
+    font-weight:700;
+  }
+  .sidebar .icon{
+    width:17px; height:17px; border-radius:5px;
+    background:rgba(255,255,255,0.12);
+    flex-shrink:0;
+  }
+  .sidebar a.active .icon{ background:var(--gold); }
+
+  .main{flex:1; display:flex; flex-direction:column;}
+  .topbar{
+    background:white;
+    border-bottom:1px solid var(--border);
+    padding:16px 30px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .topbar .page-title{font-size:18px; font-weight:800; color:var(--blue);}
+  .topbar .page-sub{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .topbar-right{display:flex; align-items:center; gap:16px;}
+  .center-badge{
+    background:#eef1f8; color:var(--blue); font-weight:700; font-size:11.5px;
+    padding:7px 13px; border-radius:20px;
+  }
+  .role-badge{
+    background:var(--green); color:white; font-weight:700; font-size:11px;
+    padding:6px 12px; border-radius:20px;
+  }
+  .avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg, var(--green), var(--blue));
+    color:white; font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .content{padding:26px 30px; flex:1;}
+
+  .stats-row{display:flex; gap:16px; margin-bottom:22px;}
+  .stat-card{
+    flex:1; background:white; border:1px solid var(--border); border-radius:12px;
+    padding:18px 20px;
+  }
+  .stat-card .lbl{font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.3px; margin-bottom:8px;}
+  .stat-card .val{font-size:24px; font-weight:800; color:var(--blue);}
+  .stat-card .delta{font-size:10.5px; font-weight:700; margin-top:4px;}
+  .stat-card .delta.up{color:var(--green);}
+  .stat-card .delta.warn{color:var(--red);}
+
+  .panel{
+    background:white; border:1px solid var(--border); border-radius:12px;
+    padding:20px 22px; margin-bottom:18px;
+  }
+  .panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .panel-head h3{font-size:14.5px; color:var(--blue); font-weight:800;}
+  .panel-head .sub{font-size:11px; color:var(--muted); margin-top:2px;}
+  .panel-head .action{
+    background:var(--red); color:white; border:none; padding:8px 14px;
+    border-radius:7px; font-size:12px; font-weight:700; cursor:pointer;
+  }
+  .panel-head .action.secondary{
+    background:white; color:var(--blue); border:1px solid var(--border);
+  }
+
+  /* GRUPOS - tarjetas */
+  .group-grid{ display:flex; gap:14px; flex-wrap:wrap; }
+  .group-card{
+    flex:1; min-width:200px;
+    border:1px solid var(--border); border-radius:10px; padding:16px;
+    background:#fbfcfd;
+  }
+  .group-card .tag2{
+    display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase;
+    padding:4px 10px; border-radius:20px; margin-bottom:8px;
+    background:#e6edf5; color:var(--blue);
+  }
+  .group-card.tutor .tag2{ background:#fff3da; color:#a06b00; }
+  .group-card h4{font-size:13.5px; color:var(--blue); margin-bottom:4px;}
+  .group-card .meta{font-size:11px; color:var(--muted); margin-bottom:10px;}
+  .group-card .progress-bar{height:6px; border-radius:6px; background:#eef0f3; overflow:hidden; margin-bottom:5px;}
+  .group-card .progress-bar .fill{height:100%; border-radius:6px; background:var(--green);}
+  .group-card .pct{font-size:10.5px; color:var(--muted); display:flex; justify-content:space-between;}
+
+  table{width:100%; border-collapse:collapse;}
+  th{
+    text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:0.4px;
+    color:var(--muted); padding:9px 10px; border-bottom:1px solid var(--border);
+  }
+  td{padding:10px 10px; font-size:12px; color:var(--ink); border-bottom:1px solid #f1eee3; vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  .row-name{display:flex; align-items:center; gap:10px;}
+  .mini-avatar{
+    width:28px;height:28px;border-radius:50%;
+    background:#e4ecf3; color:var(--blue); font-weight:700; font-size:10.5px;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .grade-input{
+    width:54px; padding:6px 8px; border:1px solid var(--border); border-radius:6px;
+    font-size:12px; text-align:center;
+  }
+  .att-toggle{ display:flex; gap:6px; }
+  .att-btn{
+    width:30px; height:26px; border-radius:6px; border:1px solid var(--border);
+    background:white; font-size:11px; font-weight:700; cursor:pointer; color:var(--muted);
+  }
+  .att-btn.present{ background:#e6f4ec; border-color:#bfe3cd; color:var(--green-dark); }
+  .att-btn.absent{ background:#fbe9e6; border-color:#f3c8c0; color:var(--red); }
+
+  .pill{
+    display:inline-block; padding:4px 10px; border-radius:20px; font-size:10.5px; font-weight:700;
+  }
+  .pill.green{ background:#e6f4ec; color:var(--green-dark); }
+  .pill.red{ background:#fbe9e6; color:var(--red); }
+  .pill.gray{ background:#eef0f3; color:var(--muted); }
+
+  .schedule-row{
+    display:flex; align-items:center; gap:14px; padding:10px 0; border-bottom:1px solid #f1eee3;
+  }
+  .schedule-row:last-child{ border-bottom:none; }
+  .schedule-time{
+    width:90px; font-size:12px; font-weight:700; color:var(--blue); flex-shrink:0;
+  }
+  .schedule-info{ flex:1; font-size:12.5px; }
+  .schedule-info b{ color:var(--ink); }
+  .schedule-info span{ color:var(--muted); font-size:11px; display:block; margin-top:2px; }
+
+  .filters{display:flex; gap:10px; margin-bottom:16px;}
+  .filters select{
+    border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:12px;
+    background:var(--sand); color:var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand"><div class="mark"></div>CentroGE</div>
+
+    <div class="group-label">General</div>
+    <a class="active"><div class="icon"></div>Dashboard</a>
+    <a><div class="icon"></div>Horario</a>
+
+    <div class="group-label">Mis grupos</div>
+    <a><div class="icon"></div>Mis alumnos</a>
+    <a><div class="icon"></div>Notas</a>
+    <a><div class="icon"></div>Asistencia</a>
+
+    <div class="group-label">Centro</div>
+    <a><div class="icon"></div>Comunicación</a>
+    <a><div class="icon"></div>Mi perfil</a>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Panel del Profesor</div>
+        <div class="page-sub">Aurora Bicogo · Matemáticas · Colegio Santa Isabel</div>
+      </div>
+      <div class="topbar-right">
+        <div class="role-badge">Profesor</div>
+        <div class="center-badge">Curso 2025 - 2026</div>
+        <div class="avatar">AB</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="lbl">Grupos asignados</div>
+          <div class="val">4</div>
+          <div class="delta up">1 como tutora</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Alumnos a cargo</div>
+          <div class="val">108</div>
+          <div class="delta up">Matemáticas</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Notas pendientes</div>
+          <div class="val">12</div>
+          <div class="delta warn">3º B · Examen parcial</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Asistencia de hoy</div>
+          <div class="val">Sin registrar</div>
+          <div class="delta warn">2 grupos pendientes</div>
+        </div>
+      </div>
+
+      <!-- MIS GRUPOS -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Mis grupos y asignaturas</h3>
+            <div class="sub">Solo puedes ver y modificar la información de tus propios grupos</div>
+          </div>
+        </div>
+        <div class="group-grid">
+          <div class="group-card tutor">
+            <div class="tag2">Tutoría</div>
+            <h4>3º B</h4>
+            <div class="meta">Matemáticas · 26 alumnos</div>
+            <div class="progress-bar"><div class="fill" style="width:94%;"></div></div>
+            <div class="pct"><span>Asistencia</span><span>94%</span></div>
+          </div>
+          <div class="group-card">
+            <div class="tag2">Asignatura</div>
+            <h4>2º A</h4>
+            <div class="meta">Matemáticas · 27 alumnos</div>
+            <div class="progress-bar"><div class="fill" style="width:90%;"></div></div>
+            <div class="pct"><span>Asistencia</span><span>90%</span></div>
+          </div>
+          <div class="group-card">
+            <div class="tag2">Asignatura</div>
+            <h4>2º C</h4>
+            <div class="meta">Matemáticas · 31 alumnos</div>
+            <div class="progress-bar"><div class="fill" style="width:81%; background:#cf2027;"></div></div>
+            <div class="pct"><span>Asistencia</span><span>81%</span></div>
+          </div>
+          <div class="group-card">
+            <div class="tag2">Asignatura</div>
+            <h4>4º A</h4>
+            <div class="meta">Matemáticas · 24 alumnos</div>
+            <div class="progress-bar"><div class="fill" style="width:90%;"></div></div>
+            <div class="pct"><span>Asistencia</span><span>90%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARGA DE NOTAS -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Cargar notas</h3>
+            <div class="sub">3º B · Matemáticas · Examen parcial — 2º trimestre</div>
+          </div>
+          <button class="action">Guardar notas</button>
+        </div>
+        <table>
+          <tr><th>Alumno</th><th>Nota anterior</th><th>Nota nueva</th><th>Observación</th></tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">EM</div>Estela Micha Obama</div></td>
+            <td>8.2</td>
+            <td><input class="grade-input" value="8.6"></td>
+            <td><span class="pill green">Sin novedad</span></td>
+          </tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">PS</div>Pilar Sosa Ondo</div></td>
+            <td>7.5</td>
+            <td><input class="grade-input" value="7.9"></td>
+            <td><span class="pill green">Sin novedad</span></td>
+          </tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">GN</div>Gabriel Ndong Mbomio</div></td>
+            <td>6.0</td>
+            <td><input class="grade-input" value="6.4"></td>
+            <td><span class="pill gray">En seguimiento</span></td>
+          </tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">TE</div>Teodoro Esono Mangue</div></td>
+            <td>5.4</td>
+            <td><input class="grade-input" value=""></td>
+            <td><span class="pill red">Nota pendiente</span></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- ASISTENCIA -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Tomar asistencia</h3>
+            <div class="sub">2º C · Matemáticas · Hoy, 29 de junio</div>
+          </div>
+          <button class="action">Guardar asistencia</button>
+        </div>
+        <table>
+          <tr><th>Alumno</th><th>Estado</th></tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">JN</div>Juan Nguema Eyi</div></td>
+            <td><div class="att-toggle"><button class="att-btn present">P</button><button class="att-btn">A</button></div></td>
+          </tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">CB</div>Carolina Bindang</div></td>
+            <td><div class="att-toggle"><button class="att-btn present">P</button><button class="att-btn">A</button></div></td>
+          </tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">MO</div>Miguel Oyono Ndong</div></td>
+            <td><div class="att-toggle"><button class="att-btn">P</button><button class="att-btn absent">A</button></div></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- HORARIO DE HOY -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Mi horario de hoy</h3>
+            <div class="sub">Lunes, 29 de junio</div>
+          </div>
+        </div>
+        <div class="schedule-row">
+          <div class="schedule-time">08:00 - 09:00</div>
+          <div class="schedule-info"><b>Matemáticas</b><span>3º B · Aula 12</span></div>
+        </div>
+        <div class="schedule-row">
+          <div class="schedule-time">09:00 - 10:00</div>
+          <div class="schedule-info"><b>Matemáticas</b><span>2º A · Aula 8</span></div>
+        </div>
+        <div class="schedule-row">
+          <div class="schedule-time">10:30 - 11:30</div>
+          <div class="schedule-info"><b>Matemáticas</b><span>2º C · Aula 8</span></div>
+        </div>
+        <div class="schedule-row">
+          <div class="schedule-time">11:30 - 12:30</div>
+          <div class="schedule-info"><b>Matemáticas</b><span>4º A · Aula 14</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CentroGE - Panel del Director</title>
+<style>
+  :root{
+    --blue:#0c2a78;
+    --blue-dark:#081d52;
+    --green:#0a7a3c;
+    --green-dark:#055c2a;
+    --red:#cf2027;
+    --red-dark:#a8181d;
+    --white:#ffffff;
+    --ink:#13202c;
+    --muted:#5b6b78;
+    --border:#dfe3e6;
+    --gold:#f2b705;
+    --sand:#f7f4ec;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ font-family: Arial, Helvetica, sans-serif; background:var(--sand); color:var(--ink); }
+
+  .app{display:flex; min-height:100vh;}
+
+  /* SIDEBAR */
+  .sidebar{
+    width:240px;
+    background:var(--blue);
+    color:#cfe0ee;
+    flex-shrink:0;
+    padding:22px 0;
+  }
+  .sidebar .brand{
+    display:flex; align-items:center; gap:10px;
+    padding:0 22px 24px 22px;
+    font-weight:800; font-size:18px; color:white;
+  }
+  .sidebar .brand .mark{
+    width:28px;height:28px;border-radius:7px;
+    background:linear-gradient(135deg, var(--green) 0% 50%, var(--blue-dark) 50% 100%);
+    position:relative;
+    border:1px solid rgba(255,255,255,0.3);
+  }
+  .sidebar .brand .mark::after{
+    content:""; position:absolute; right:0; top:0; width:11px; height:11px;
+    background:var(--red); border-radius:0 7px 0 7px;
+  }
+  .sidebar .group-label{
+    font-size:10px; letter-spacing:0.8px; text-transform:uppercase;
+    color:#7e9bb8; padding:14px 22px 6px 22px;
+  }
+  .sidebar a{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 22px;
+    color:#cfe0ee;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:500;
+    border-left:3px solid transparent;
+  }
+  .sidebar a.active{
+    background:rgba(255,255,255,0.08);
+    border-left:3px solid var(--gold);
+    color:white;
+    font-weight:700;
+  }
+  .sidebar .icon{
+    width:17px; height:17px; border-radius:5px;
+    background:rgba(255,255,255,0.12);
+    flex-shrink:0;
+  }
+  .sidebar a.active .icon{ background:var(--gold); }
+
+  /* MAIN */
+  .main{flex:1; display:flex; flex-direction:column;}
+  .topbar{
+    background:white;
+    border-bottom:1px solid var(--border);
+    padding:16px 30px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .topbar .page-title{font-size:18px; font-weight:800; color:var(--blue);}
+  .topbar .page-sub{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .topbar-right{display:flex; align-items:center; gap:16px;}
+  .center-badge{
+    background:#eef1f8; color:var(--blue); font-weight:700; font-size:11.5px;
+    padding:7px 13px; border-radius:20px;
+  }
+  .role-badge{
+    background:var(--red); color:white; font-weight:700; font-size:11px;
+    padding:6px 12px; border-radius:20px;
+  }
+  .avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg, var(--green), var(--blue));
+    color:white; font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .content{padding:26px 30px; flex:1;}
+
+  .stats-row{display:flex; gap:16px; margin-bottom:22px;}
+  .stat-card{
+    flex:1; background:white; border:1px solid var(--border); border-radius:12px;
+    padding:18px 20px;
+  }
+  .stat-card .lbl{font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.3px; margin-bottom:8px;}
+  .stat-card .val{font-size:24px; font-weight:800; color:var(--blue);}
+  .stat-card .delta{font-size:10.5px; font-weight:700; margin-top:4px;}
+  .stat-card .delta.up{color:var(--green);}
+  .stat-card .delta.warn{color:var(--red);}
+
+  .panel{
+    background:white; border:1px solid var(--border); border-radius:12px;
+    padding:20px 22px; margin-bottom:18px;
+  }
+  .panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .panel-head h3{font-size:14.5px; color:var(--blue); font-weight:800;}
+  .panel-head .sub{font-size:11px; color:var(--muted); margin-top:2px;}
+  .panel-head .action{
+    background:var(--red); color:white; border:none; padding:8px 14px;
+    border-radius:7px; font-size:12px; font-weight:700; cursor:pointer;
+  }
+
+  table{width:100%; border-collapse:collapse;}
+  th{
+    text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:0.4px;
+    color:var(--muted); padding:9px 10px; border-bottom:1px solid var(--border);
+  }
+  td{padding:11px 10px; font-size:12px; color:var(--ink); border-bottom:1px solid #f1eee3; vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  .row-name{display:flex; align-items:center; gap:10px;}
+  .mini-avatar{
+    width:30px;height:30px;border-radius:50%;
+    background:#e4ecf3; color:var(--blue); font-weight:700; font-size:11px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pill{
+    display:inline-block; padding:4px 10px; border-radius:20px; font-size:10.5px; font-weight:700;
+  }
+  .pill.director{ background:#fbe9e6; color:var(--red); }
+  .pill.secretaria{ background:#e6edf5; color:var(--blue); }
+  .pill.contable{ background:#fff3da; color:#a06b00; }
+  .pill.jefe-estudios{ background:#e6f4ec; color:var(--green-dark); }
+  .pill.jefe-disciplina{ background:#f3e6f5; color:#7a2a8a; }
+  .pill.active-status{ background:#e6f4ec; color:var(--green-dark); }
+  .pill.inactive-status{ background:#eef0f3; color:var(--muted); }
+
+  .icon-btn{
+    background:white; border:1px solid var(--border); color:var(--blue);
+    padding:5px 11px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; margin-right:4px;
+  }
+  .icon-btn.danger{ color:var(--red); border-color:#f3d3cf; }
+
+  /* MATRIZ DE PERMISOS */
+  .matrix-wrap{ overflow-x:auto; }
+  table.matrix{ min-width:760px; }
+  table.matrix th{ text-align:center; }
+  table.matrix th:first-child{ text-align:left; }
+  table.matrix td{ text-align:center; }
+  table.matrix td:first-child{ text-align:left; font-weight:700; color:var(--blue); }
+  .chk{
+    display:inline-flex; width:20px; height:20px; border-radius:5px;
+    align-items:center; justify-content:center; font-size:12px; font-weight:800;
+  }
+  .chk.yes{ background:#e6f4ec; color:var(--green-dark); }
+  .chk.no{ background:#f4f1e8; color:#c9c2ab; }
+  .chk.partial{ background:#fff3da; color:#a06b00; }
+
+  .legend{ display:flex; gap:18px; margin-top:14px; font-size:11px; color:var(--muted); }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; }
+
+  .filters{display:flex; gap:10px; margin-bottom:16px;}
+  .filters select, .filters input{
+    border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:12px;
+    background:var(--sand); color:var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand"><div class="mark"></div>CentroGE</div>
+
+    <div class="group-label">General</div>
+    <a class="active"><div class="icon"></div>Dashboard</a>
+
+    <div class="group-label">Personal del centro</div>
+    <a><div class="icon"></div>Personal administrativo</a>
+    <a><div class="icon"></div>Permisos y roles</a>
+    <a><div class="icon"></div>Profesores</a>
+
+    <div class="group-label">Académico</div>
+    <a><div class="icon"></div>Alumnos</a>
+    <a><div class="icon"></div>Grupos de tutoría</a>
+    <a><div class="icon"></div>Notas</a>
+    <a><div class="icon"></div>Asistencia</a>
+
+    <div class="group-label">Centro</div>
+    <a><div class="icon"></div>Matrículas</a>
+    <a><div class="icon"></div>Pagos y finanzas</a>
+    <a><div class="icon"></div>Comunicación</a>
+    <a><div class="icon"></div>Configuración</a>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Panel del Director</div>
+        <div class="page-sub">Control total del centro · Colegio Santa Isabel</div>
+      </div>
+      <div class="topbar-right">
+        <div class="role-badge">Director</div>
+        <div class="center-badge">Curso 2025 - 2026</div>
+        <div class="avatar">MD</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="lbl">Personal del centro</div>
+          <div class="val">34</div>
+          <div class="delta up">27 docentes · 7 administrativos</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Alumnos matriculados</div>
+          <div class="val">412</div>
+          <div class="delta up">+18 este mes</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Incidencias abiertas</div>
+          <div class="val">3</div>
+          <div class="delta warn">Jefatura de disciplina</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Pagos pendientes</div>
+          <div class="val">14</div>
+          <div class="delta warn">Seguimiento de contabilidad</div>
+        </div>
+      </div>
+
+      <!-- PERSONAL ADMINISTRATIVO -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Personal administrativo</h3>
+            <div class="sub">Secretaría, contabilidad, jefaturas — solo el Director puede crear o eliminar cuentas de este tipo</div>
+          </div>
+          <button class="action">+ Añadir personal</button>
+        </div>
+        <div class="filters">
+          <input type="text" placeholder="Buscar por nombre...">
+          <select><option>Todos los cargos</option></select>
+        </div>
+        <table>
+          <tr><th>Nombre</th><th>Cargo</th><th>Correo</th><th>Estado</th><th></th></tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">MD</div>Marina Diosdado</div></td>
+            <td><span class="pill director">Director</span></td>
+            <td>marina.diosdado@centroge.com</td>
+            <td><span class="pill active-status">Activo</span></td>
+            <td><button class="icon-btn">Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">CN</div>Carmen Ndongo</div></td>
+            <td><span class="pill secretaria">Secretaría</span></td>
+            <td>carmen.ndongo@centroge.com</td>
+            <td><span class="pill active-status">Activo</span></td>
+            <td><button class="icon-btn">Editar</button><button class="icon-btn danger">Suspender</button></td>
+          </tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">PE</div>Pablo Esono</div></td>
+            <td><span class="pill contable">Contabilidad</span></td>
+            <td>pablo.esono@centroge.com</td>
+            <td><span class="pill active-status">Activo</span></td>
+            <td><button class="icon-btn">Editar</button><button class="icon-btn danger">Suspender</button></td>
+          </tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">RM</div>Rosa Mangue</div></td>
+            <td><span class="pill jefe-estudios">Jefa de Estudios</span></td>
+            <td>rosa.mangue@centroge.com</td>
+            <td><span class="pill active-status">Activo</span></td>
+            <td><button class="icon-btn">Editar</button><button class="icon-btn danger">Suspender</button></td>
+          </tr>
+          <tr>
+            <td><div class="row-name"><div class="mini-avatar">TB</div>Teodoro Bicogo</div></td>
+            <td><span class="pill jefe-disciplina">Jefe de Disciplina</span></td>
+            <td>teodoro.bicogo@centroge.com</td>
+            <td><span class="pill inactive-status">De baja</span></td>
+            <td><button class="icon-btn">Editar</button><button class="icon-btn danger">Reactivar</button></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- MATRIZ DE PERMISOS -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Permisos y roles</h3>
+            <div class="sub">El Director puede ajustar qué puede ver y modificar cada cargo</div>
+          </div>
+          <button class="action">Editar permisos</button>
+        </div>
+
+        <div class="matrix-wrap">
+          <table class="matrix">
+            <tr>
+              <th>Área del sistema</th>
+              <th>Director</th>
+              <th>Secretaría</th>
+              <th>Contabilidad</th>
+              <th>Jefe Estudios</th>
+              <th>Jefe Disciplina</th>
+              <th>Profesor</th>
+            </tr>
+            <tr>
+              <td>Alumnos (datos y matrícula)</td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk partial">○</span></td>
+              <td><span class="chk partial">○</span></td>
+              <td><span class="chk no">–</span></td>
+            </tr>
+            <tr>
+              <td>Notas y boletines</td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk partial">○</span></td>
+            </tr>
+            <tr>
+              <td>Asistencia</td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk partial">○</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk partial">○</span></td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk partial">○</span></td>
+            </tr>
+            <tr>
+              <td>Incidencias disciplinarias</td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk partial">○</span></td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk partial">○</span></td>
+            </tr>
+            <tr>
+              <td>Pagos y finanzas</td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+            </tr>
+            <tr>
+              <td>Personal del centro</td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+            </tr>
+            <tr>
+              <td>Comunicación a familias</td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk partial">○</span></td>
+              <td><span class="chk partial">○</span></td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk partial">○</span></td>
+            </tr>
+            <tr>
+              <td>Configuración del centro</td>
+              <td><span class="chk yes">✓</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+              <td><span class="chk no">–</span></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="legend">
+          <span><span class="chk yes" style="width:16px;height:16px;font-size:10px;">✓</span> Acceso completo</span>
+          <span><span class="chk partial" style="width:16px;height:16px;font-size:10px;">○</span> Acceso limitado / solo lectura</span>
+          <span><span class="chk no" style="width:16px;height:16px;font-size:10px;">–</span> Sin acceso</span>
+        </div>
+      </div>
+
+      <!-- ACTIVIDAD RECIENTE DE GESTION -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Actividad reciente de gestión</h3>
+            <div class="sub">Cambios realizados por el personal del centro</div>
+          </div>
+        </div>
+        <table>
+          <tr><th>Acción</th><th>Realizado por</th><th>Fecha</th><th>Detalle</th></tr>
+          <tr><td>Matrícula registrada</td><td>Carmen Ndongo (Secretaría)</td><td>Hoy, 09:14</td><td>Alumno nuevo en 1º A</td></tr>
+          <tr><td>Pago marcado como recibido</td><td>Pablo Esono (Contabilidad)</td><td>Hoy, 08:50</td><td>Mensualidad de junio · 2º C</td></tr>
+          <tr><td>Incidencia registrada</td><td>Teodoro Bicogo (Disciplina)</td><td>Ayer, 16:20</td><td>Alumno de 3º B</td></tr>
+          <tr><td>Boletín aprobado</td><td>Rosa Mangue (Jefa de Estudios)</td><td>Ayer, 11:05</td><td>4º A · 2º Trimestre</td></tr>
+          <tr><td>Permiso modificado</td><td>Marina Diosdado (Director)</td><td>2 días</td><td>Acceso de Secretaría a comunicación ampliado</td></tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

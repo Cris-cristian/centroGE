@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CentroGE - Inicio</title>
+<style>
+  :root{
+    --blue:#0c2a78;
+    --blue-dark:#081d52;
+    --green:#0a7a3c;
+    --green-dark:#055c2a;
+    --red:#cf2027;
+    --red-dark:#a8181d;
+    --white:#ffffff;
+    --ink:#13202c;
+    --muted:#5b6b78;
+    --border:#dfe3e6;
+    --gold:#f2b705;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html, body{ height:100%; }
+  body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:var(--white);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .page-content{ flex:1; }
+
+  /* MENU */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 40px;
+    background:var(--blue);
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size:20px;
+    color:white;
+  }
+  .logo .mark{
+    width:30px; height:30px; border-radius:8px;
+    background:linear-gradient(135deg, var(--green) 0% 50%, var(--blue-dark) 50% 100%);
+    position:relative;
+    border:1px solid rgba(255,255,255,0.3);
+  }
+  .logo .mark::after{
+    content:"";
+    position:absolute; right:0; top:0; width:12px; height:12px;
+    background:var(--red); border-radius:0 8px 0 8px;
+  }
+  nav{display:flex; gap:30px;}
+  nav a{
+    color:#e7ecf3;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:500;
+  }
+  nav a:hover{ color:var(--gold); }
+  .btn-register{
+    background:var(--red);
+    color:white;
+    padding:9px 18px;
+    border-radius:6px;
+    text-decoration:none;
+    font-size:13.5px;
+    font-weight:700;
+  }
+
+  /* HERO con escudo de fondo */
+  .search-section{
+    position:relative;
+    overflow:hidden;
+    padding:70px 40px 40px 40px;
+    text-align:center;
+    background:
+      linear-gradient(180deg, var(--blue) 0%, #123a8f 55%, #1c4ea8 100%);
+    color:white;
+  }
+  .shield-bg{
+    position:absolute;
+    top:50%; left:50%;
+    width:640px; height:640px;
+    transform:translate(-50%,-50%);
+    background:url('shield.png') center center / contain no-repeat;
+    opacity:0.16;
+    z-index:0;
+    pointer-events:none;
+  }
+  .search-section > *:not(.shield-bg){
+    position:relative;
+    z-index:1;
+  }
+  .search-section h1{
+    font-size:27px;
+    color:white;
+    margin-bottom:8px;
+  }
+  .search-section .sub{
+    font-size:13.5px;
+    color:#cfe0f2;
+    margin-bottom:26px;
+  }
+  .search-box{
+    max-width:520px;
+    margin:0 auto;
+    display:flex;
+    gap:8px;
+  }
+  .search-box input{
+    flex:1;
+    padding:13px 14px;
+    border:none;
+    border-radius:6px;
+    font-size:14px;
+    outline:none;
+  }
+  .search-box button{
+    background:var(--red);
+    color:white;
+    border:none;
+    padding:13px 24px;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .search-box button:hover{ background:var(--red-dark); }
+
+  /* franja verde de transicion */
+  .accent-strip{
+    height:6px;
+    background:linear-gradient(90deg, var(--green) 0%, var(--gold) 50%, var(--red) 100%);
+  }
+
+  /* TABLA DE CENTROS */
+  .table-section{
+    padding:36px 40px 60px 40px;
+    max-width:900px;
+    margin:0 auto;
+  }
+  .table-section h2{
+    font-size:15px;
+    color:var(--blue);
+    margin-bottom:14px;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    text-align:center;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:rgba(10,122,60,0.07);
+    border:1px solid rgba(10,122,60,0.25);
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(12,42,120,0.06);
+  }
+  th{
+    text-align:left;
+    background:var(--blue);
+    color:white;
+    font-size:12px;
+    text-transform:uppercase;
+    padding:12px 14px;
+  }
+  td{
+    padding:12px 14px;
+    font-size:13.5px;
+    border-bottom:1px solid rgba(10,122,60,0.15);
+  }
+  tr:last-child td{ border-bottom:none; }
+  .tipo-pill{
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:12px;
+    font-size:11px;
+    font-weight:700;
+  }
+  .tipo-fp{ background:#e3f3e9; color:var(--green-dark); }
+  .tipo-colegio{ background:#e2e8f7; color:var(--blue); }
+  .btn-ver{
+    background:white;
+    color:var(--red);
+    border:1.5px solid var(--red);
+    padding:6px 14px;
+    border-radius:6px;
+    font-size:12.5px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .btn-ver:hover{ background:var(--red); color:white; }
+
+  footer{
+    text-align:center;
+    padding:20px;
+    font-size:11.5px;
+    color:white;
+    background:var(--blue-dark);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page-content">
+
+  <header>
+    <div class="logo"><div class="mark"></div>CentroGE</div>
+    <nav>
+      <a href="#">Colegios</a>
+      <a href="#">FP</a>
+      <a href="#">Cómo funciona</a>
+      <a href="#">Contacto</a>
+    </nav>
+    <a class="btn-register" href="centroge_registro.html">Registra tu centro</a>
+  </header>
+
+  <div class="search-section">
+    <div class="shield-bg"></div>
+    <h1>Encuentra tu centro educativo</h1>
+    <div class="sub">Colegios y centros de Formación Profesional en Guinea Ecuatorial</div>
+    <div class="search-box">
+      <input type="text" placeholder="Busca un centro por nombre o ciudad...">
+      <button>Buscar</button>
+    </div>
+  </div>
+
+  <div class="accent-strip"></div>
+
+  <div class="table-section">
+    <h2>Centros registrados</h2>
+    <table>
+      <tr>
+        <th>Centro</th>
+        <th>Tipo</th>
+        <th>Ciudad</th>
+        <th></th>
+      </tr>
+      <tr>
+        <td>Colegio Santa Isabel</td>
+        <td><span class="tipo-pill tipo-colegio">Colegio</span></td>
+        <td>Malabo</td>
+        <td><button class="btn-ver">Ver centro</button></td>
+      </tr>
+      <tr>
+        <td>Instituto Nostradamus</td>
+        <td><span class="tipo-pill tipo-fp">FP</span></td>
+        <td>Malabo</td>
+        <td><button class="btn-ver">Ver centro</button></td>
+      </tr>
+      <tr>
+        <td>Centro Profesional Santa Mónica</td>
+        <td><span class="tipo-pill tipo-fp">FP</span></td>
+        <td>Bata</td>
+        <td><button class="btn-ver">Ver centro</button></td>
+      </tr>
+      <tr>
+        <td>Colegio María Auxiliadora</td>
+        <td><span class="tipo-pill tipo-colegio">Colegio</span></td>
+        <td>Malabo</td>
+        <td><button class="btn-ver">Ver centro</button></td>
+      </tr>
+      <tr>
+        <td>CES Vitae</td>
+        <td><span class="tipo-pill tipo-fp">FP</span></td>
+        <td>Malabo</td>
+        <td><button class="btn-ver">Ver centro</button></td>
+      </tr>
+    </table>
+  </div>
+
+  </div>
+
+  <footer>CentroGE · Plataforma de gestión educativa</footer>
+
+</body>
+</html>

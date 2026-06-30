@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CentroGE - Crear cuenta</title>
+<style>
+  :root{
+    --blue:#0c2a78;
+    --blue-dark:#081d52;
+    --green:#0a7a3c;
+    --green-dark:#055c2a;
+    --red:#cf2027;
+    --red-dark:#a8181d;
+    --white:#ffffff;
+    --ink:#13202c;
+    --muted:#5b6b78;
+    --border:#dfe3e6;
+    --gold:#f2b705;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html, body{ height:100%; }
+  body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:var(--white);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .page-content{ flex:1; }
+
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 40px;
+    background:var(--blue);
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size:20px;
+    color:white;
+    text-decoration:none;
+  }
+  .logo .mark{
+    width:30px; height:30px; border-radius:8px;
+    background:linear-gradient(135deg, var(--green) 0% 50%, var(--blue-dark) 50% 100%);
+    position:relative;
+    border:1px solid rgba(255,255,255,0.3);
+  }
+  .logo .mark::after{
+    content:"";
+    position:absolute; right:0; top:0; width:12px; height:12px;
+    background:var(--red); border-radius:0 8px 0 8px;
+  }
+  nav{display:flex; gap:30px;}
+  nav a{ color:#e7ecf3; text-decoration:none; font-size:14px; font-weight:500; }
+  nav a:hover{ color:var(--gold); }
+
+  .accent-strip{
+    height:6px;
+    background:linear-gradient(90deg, var(--green) 0%, var(--gold) 50%, var(--red) 100%);
+  }
+
+  .auth-wrap{
+    display:flex;
+    justify-content:center;
+    padding:50px 20px 70px 20px;
+    position:relative;
+    overflow:hidden;
+  }
+  .shield-bg{
+    position:absolute;
+    top:-60px; left:50%;
+    width:520px; height:520px;
+    transform:translateX(-50%);
+    background:url('shield.png') center center / contain no-repeat;
+    opacity:0.06;
+    z-index:0;
+    pointer-events:none;
+  }
+  .auth-card{
+    position:relative;
+    z-index:1;
+    background:white;
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:0 6px 24px rgba(12,42,120,0.08);
+    width:100%;
+    max-width:430px;
+    padding:34px 34px 30px 34px;
+  }
+  .auth-card h1{
+    font-size:21px;
+    color:var(--blue);
+    margin-bottom:6px;
+    text-align:center;
+  }
+  .auth-card .sub{
+    font-size:12.5px;
+    color:var(--muted);
+    text-align:center;
+    margin-bottom:26px;
+  }
+
+  .tabs{
+    display:flex;
+    background:#eef1f6;
+    border-radius:8px;
+    padding:4px;
+    margin-bottom:24px;
+  }
+  .tabs a{
+    flex:1;
+    text-align:center;
+    padding:9px 0;
+    border-radius:6px;
+    font-size:13px;
+    font-weight:700;
+    text-decoration:none;
+    color:var(--muted);
+  }
+  .tabs a.active{
+    background:var(--blue);
+    color:white;
+  }
+
+  .field{ margin-bottom:16px; }
+  .field label{
+    display:block;
+    font-size:12px;
+    font-weight:700;
+    color:var(--blue);
+    margin-bottom:5px;
+  }
+  .field .opt{ color:var(--muted); font-weight:400; }
+  .field input, .field select{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid var(--border);
+    border-radius:7px;
+    font-size:13.5px;
+    outline:none;
+    background:#fbfcfd;
+  }
+  .field input:focus, .field select:focus{ border-color:var(--blue); }
+
+  .row-2{ display:flex; gap:12px; }
+  .row-2 .field{ flex:1; }
+
+  .photo-upload{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:18px;
+    padding:12px;
+    background:#fbfcfd;
+    border:1px dashed var(--border);
+    border-radius:8px;
+  }
+  .photo-upload .circle{
+    width:46px; height:46px; border-radius:50%;
+    background:#e8edf5;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--blue); font-size:18px; font-weight:700;
+    flex-shrink:0;
+  }
+  .photo-upload .txt{
+    font-size:12px;
+    color:var(--muted);
+  }
+  .photo-upload .txt b{ color:var(--blue); display:block; font-size:12.5px; margin-bottom:2px; }
+
+  .role-select{
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .role-select label{
+    flex:1;
+    text-align:center;
+    border:1.5px solid var(--border);
+    border-radius:8px;
+    padding:10px 4px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .role-select input{ display:none; }
+  .role-select input:checked + label{
+    border-color:var(--blue);
+    background:#eef1f8;
+    color:var(--blue);
+  }
+
+  .btn-primary{
+    width:100%;
+    background:var(--red);
+    color:white;
+    border:none;
+    padding:13px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .btn-primary:hover{ background:var(--red-dark); }
+
+  .forgot{
+    text-align:center;
+    margin-top:14px;
+    font-size:12.5px;
+  }
+  .forgot a{ color:var(--blue); text-decoration:none; font-weight:600; }
+
+  .switch-link{
+    text-align:center;
+    margin-top:18px;
+    font-size:12.5px;
+    color:var(--muted);
+  }
+  .switch-link a{ color:var(--red); font-weight:700; text-decoration:none; }
+
+  .note-box{
+    background:#fff8e8;
+    border:1px solid #f1d99a;
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:11.5px;
+    color:#6b5316;
+    margin-bottom:18px;
+  }
+
+  footer{
+    text-align:center;
+    padding:20px;
+    font-size:11.5px;
+    color:white;
+    background:var(--blue-dark);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page-content">
+
+  <header>
+    <a class="logo" href="#"><div class="mark"></div>CentroGE</a>
+    <nav>
+      <a href="#">Colegios</a>
+      <a href="#">FP</a>
+      <a href="#">Cómo funciona</a>
+      <a href="#">Contacto</a>
+    </nav>
+  </header>
+  <div class="accent-strip"></div>
+
+  <!-- ============ REGISTRO ============ -->
+  <div class="auth-wrap" id="registro">
+    <div class="shield-bg"></div>
+    <div class="auth-card">
+      <h1>Crea tu cuenta</h1>
+      <div class="sub">Datos básicos para empezar — el resto se completa en tu perfil</div>
+
+      <div class="tabs">
+        <a href="centroge_login.html">Iniciar sesión</a>
+        <a class="active" href="#">Crear cuenta</a>
+      </div>
+
+      <div class="note-box">
+        Solo pedimos lo esencial para crear tu cuenta. Información adicional según tu rol (asignaturas, tutor legal, cargo, etc.) se completará después, dentro de tu perfil.
+      </div>
+
+      <div class="field">
+        <label>¿Quién eres?</label>
+        <div class="role-select">
+          <input type="radio" name="role" id="r1" checked>
+          <label for="r1">Alumno</label>
+          <input type="radio" name="role" id="r2">
+          <label for="r2">Profesor</label>
+          <input type="radio" name="role" id="r3">
+          <label for="r3">Administrativo</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Nombre completo</label>
+        <input type="text" placeholder="Nombre y apellidos">
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Fecha de nacimiento</label>
+          <input type="date">
+        </div>
+        <div class="field">
+          <label>Documento de identidad</label>
+          <input type="text" placeholder="Número de documento">
+        </div>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Teléfono de contacto</label>
+          <input type="text" placeholder="+240 ...">
+        </div>
+        <div class="field">
+          <label>Correo electrónico <span class="opt">(opcional)</span></label>
+          <input type="email" placeholder="tucorreo@ejemplo.com">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Centro al que perteneces</label>
+        <select>
+          <option>Selecciona tu centro...</option>
+          <option>Colegio Santa Isabel</option>
+          <option>Instituto Nostradamus</option>
+          <option>Centro Profesional Santa Mónica</option>
+          <option>Colegio María Auxiliadora</option>
+          <option>CES Vitae</option>
+        </select>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" placeholder="Mínimo 8 caracteres">
+        </div>
+        <div class="field">
+          <label>Confirmar contraseña</label>
+          <input type="password" placeholder="Repite la contraseña">
+        </div>
+      </div>
+
+      <div class="photo-upload">
+        <div class="circle">+</div>
+        <div class="txt"><b>Foto de perfil (opcional)</b>Puedes añadirla ahora o más tarde desde tu perfil.</div>
+      </div>
+
+      <button class="btn-primary">Crear cuenta</button>
+
+      <div class="switch-link">¿Ya tienes cuenta? <a href="centroge_login.html">Inicia sesión</a></div>
+    </div>
+  </div>
+
+  </div>
+
+  <footer>CentroGE · Plataforma de gestión educativa</footer>
+
+</body>
+</html>

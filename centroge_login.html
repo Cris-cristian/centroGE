@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CentroGE - Iniciar sesión</title>
+<style>
+  :root{
+    --blue:#0c2a78;
+    --blue-dark:#081d52;
+    --green:#0a7a3c;
+    --green-dark:#055c2a;
+    --red:#cf2027;
+    --red-dark:#a8181d;
+    --white:#ffffff;
+    --ink:#13202c;
+    --muted:#5b6b78;
+    --border:#dfe3e6;
+    --gold:#f2b705;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html, body{ height:100%; }
+  body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:var(--white);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .page-content{ flex:1; }
+
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 40px;
+    background:var(--blue);
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size:20px;
+    color:white;
+    text-decoration:none;
+  }
+  .logo .mark{
+    width:30px; height:30px; border-radius:8px;
+    background:linear-gradient(135deg, var(--green) 0% 50%, var(--blue-dark) 50% 100%);
+    position:relative;
+    border:1px solid rgba(255,255,255,0.3);
+  }
+  .logo .mark::after{
+    content:"";
+    position:absolute; right:0; top:0; width:12px; height:12px;
+    background:var(--red); border-radius:0 8px 0 8px;
+  }
+  nav{display:flex; gap:30px;}
+  nav a{ color:#e7ecf3; text-decoration:none; font-size:14px; font-weight:500; }
+  nav a:hover{ color:var(--gold); }
+
+  .accent-strip{
+    height:6px;
+    background:linear-gradient(90deg, var(--green) 0%, var(--gold) 50%, var(--red) 100%);
+  }
+
+  .auth-wrap{
+    display:flex;
+    justify-content:center;
+    padding:50px 20px 70px 20px;
+    position:relative;
+    overflow:hidden;
+  }
+  .shield-bg{
+    position:absolute;
+    top:-60px; left:50%;
+    width:520px; height:520px;
+    transform:translateX(-50%);
+    background:url('shield.png') center center / contain no-repeat;
+    opacity:0.06;
+    z-index:0;
+    pointer-events:none;
+  }
+  .auth-card{
+    position:relative;
+    z-index:1;
+    background:white;
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:0 6px 24px rgba(12,42,120,0.08);
+    width:100%;
+    max-width:430px;
+    padding:34px 34px 30px 34px;
+  }
+  .auth-card h1{
+    font-size:21px;
+    color:var(--blue);
+    margin-bottom:6px;
+    text-align:center;
+  }
+  .auth-card .sub{
+    font-size:12.5px;
+    color:var(--muted);
+    text-align:center;
+    margin-bottom:26px;
+  }
+
+  .tabs{
+    display:flex;
+    background:#eef1f6;
+    border-radius:8px;
+    padding:4px;
+    margin-bottom:24px;
+  }
+  .tabs a{
+    flex:1;
+    text-align:center;
+    padding:9px 0;
+    border-radius:6px;
+    font-size:13px;
+    font-weight:700;
+    text-decoration:none;
+    color:var(--muted);
+  }
+  .tabs a.active{
+    background:var(--blue);
+    color:white;
+  }
+
+  .field{ margin-bottom:16px; }
+  .field label{
+    display:block;
+    font-size:12px;
+    font-weight:700;
+    color:var(--blue);
+    margin-bottom:5px;
+  }
+  .field .opt{ color:var(--muted); font-weight:400; }
+  .field input, .field select{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid var(--border);
+    border-radius:7px;
+    font-size:13.5px;
+    outline:none;
+    background:#fbfcfd;
+  }
+  .field input:focus, .field select:focus{ border-color:var(--blue); }
+
+  .row-2{ display:flex; gap:12px; }
+  .row-2 .field{ flex:1; }
+
+  .photo-upload{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:18px;
+    padding:12px;
+    background:#fbfcfd;
+    border:1px dashed var(--border);
+    border-radius:8px;
+  }
+  .photo-upload .circle{
+    width:46px; height:46px; border-radius:50%;
+    background:#e8edf5;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--blue); font-size:18px; font-weight:700;
+    flex-shrink:0;
+  }
+  .photo-upload .txt{
+    font-size:12px;
+    color:var(--muted);
+  }
+  .photo-upload .txt b{ color:var(--blue); display:block; font-size:12.5px; margin-bottom:2px; }
+
+  .role-select{
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .role-select label{
+    flex:1;
+    text-align:center;
+    border:1.5px solid var(--border);
+    border-radius:8px;
+    padding:10px 4px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .role-select input{ display:none; }
+  .role-select input:checked + label{
+    border-color:var(--blue);
+    background:#eef1f8;
+    color:var(--blue);
+  }
+
+  .btn-primary{
+    width:100%;
+    background:var(--red);
+    color:white;
+    border:none;
+    padding:13px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .btn-primary:hover{ background:var(--red-dark); }
+
+  .forgot{
+    text-align:center;
+    margin-top:14px;
+    font-size:12.5px;
+  }
+  .forgot a{ color:var(--blue); text-decoration:none; font-weight:600; }
+
+  .switch-link{
+    text-align:center;
+    margin-top:18px;
+    font-size:12.5px;
+    color:var(--muted);
+  }
+  .switch-link a{ color:var(--red); font-weight:700; text-decoration:none; }
+
+  .note-box{
+    background:#fff8e8;
+    border:1px solid #f1d99a;
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:11.5px;
+    color:#6b5316;
+    margin-bottom:18px;
+  }
+
+  footer{
+    text-align:center;
+    padding:20px;
+    font-size:11.5px;
+    color:white;
+    background:var(--blue-dark);
+  }
+</style>
+</head>
+<body>
+
+  <div class="page-content">
+
+  <header>
+    <a class="logo" href="#"><div class="mark"></div>CentroGE</a>
+    <nav>
+      <a href="#">Colegios</a>
+      <a href="#">FP</a>
+      <a href="#">Cómo funciona</a>
+      <a href="#">Contacto</a>
+    </nav>
+  </header>
+  <div class="accent-strip"></div>
+
+  <!-- ============ LOGIN ============ -->
+  <div class="auth-wrap">
+    <div class="shield-bg"></div>
+    <div class="auth-card">
+      <h1>Bienvenido de nuevo</h1>
+      <div class="sub">Inicia sesión para acceder a tu centro</div>
+
+      <div class="tabs">
+        <a class="active" href="#">Iniciar sesión</a>
+        <a href="centroge_registro.html">Crear cuenta</a>
+      </div>
+
+      <div class="field">
+        <label>Correo electrónico o teléfono</label>
+        <input type="text" placeholder="tucorreo@ejemplo.com">
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" placeholder="••••••••">
+      </div>
+
+      <button class="btn-primary">Iniciar sesión</button>
+
+      <div class="forgot"><a href="#">¿Olvidaste tu contraseña?</a></div>
+      <div class="switch-link">¿No tienes cuenta? <a href="centroge_registro.html">Regístrate aquí</a></div>
+    </div>
+  </div>
+
+  <div class="aceeso" style="text-align:center; padding:20px; background:#fdffba; border-top:1px solid #e0e0e0; max-width: 500px; margin: 0 auto; margin-bottom: 30px; border-radius: 8px;"> 
+    <h3 class="forgot"> Actuamente este es un prototipo ‼️</h3>
+  <p class="forgot"> Si quieres ver cómo será la sección administrativa pulsa aquí <a href="centroge_dashboard_director.html">Administración</a>.</p>
+  <p class="forgot">si quieres ver cómo será la sección profesores pulsa aquí <a href="centroge_dashboard_profesor.html">Profesores</a>.</p>
+  <p class="forgot">si quieres ver cómo será la sección alumnos pulsa aquí <a href="centroge_dashboard_alumno.html">Alumnos</a>.</p>
+  </div>
+
+  </div>
+
+  <footer>CentroGE · Plataforma de gestión educativa</footer>
+
+</body>
+</html>

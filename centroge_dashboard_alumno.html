@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CentroGE - Panel del Alumno</title>
+<style>
+  :root{
+    --blue:#0c2a78;
+    --blue-dark:#081d52;
+    --green:#0a7a3c;
+    --green-dark:#055c2a;
+    --red:#cf2027;
+    --red-dark:#a8181d;
+    --white:#ffffff;
+    --ink:#13202c;
+    --muted:#5b6b78;
+    --border:#dfe3e6;
+    --gold:#f2b705;
+    --sand:#f7f4ec;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ font-family: Arial, Helvetica, sans-serif; background:var(--sand); color:var(--ink); }
+
+  .app{display:flex; min-height:100vh;}
+
+  .sidebar{
+    width:220px;
+    background:var(--blue);
+    color:#cfe0ee;
+    flex-shrink:0;
+    padding:22px 0;
+  }
+  .sidebar .brand{
+    display:flex; align-items:center; gap:10px;
+    padding:0 22px 24px 22px;
+    font-weight:800; font-size:18px; color:white;
+  }
+  .sidebar .brand .mark{
+    width:28px;height:28px;border-radius:7px;
+    background:linear-gradient(135deg, var(--green) 0% 50%, var(--blue-dark) 50% 100%);
+    position:relative;
+    border:1px solid rgba(255,255,255,0.3);
+  }
+  .sidebar .brand .mark::after{
+    content:""; position:absolute; right:0; top:0; width:11px; height:11px;
+    background:var(--red); border-radius:0 7px 0 7px;
+  }
+  .sidebar .group-label{
+    font-size:10px; letter-spacing:0.8px; text-transform:uppercase;
+    color:#7e9bb8; padding:14px 22px 6px 22px;
+  }
+  .sidebar a{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 22px;
+    color:#cfe0ee;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:500;
+    border-left:3px solid transparent;
+  }
+  .sidebar a.active{
+    background:rgba(255,255,255,0.08);
+    border-left:3px solid var(--gold);
+    color:white;
+    font-weight:700;
+  }
+  .sidebar .icon{
+    width:17px; height:17px; border-radius:5px;
+    background:rgba(255,255,255,0.12);
+    flex-shrink:0;
+  }
+  .sidebar a.active .icon{ background:var(--gold); }
+
+  .main{flex:1; display:flex; flex-direction:column;}
+  .topbar{
+    background:white;
+    border-bottom:1px solid var(--border);
+    padding:16px 30px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .topbar .page-title{font-size:18px; font-weight:800; color:var(--blue);}
+  .topbar .page-sub{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .topbar-right{display:flex; align-items:center; gap:16px;}
+  .center-badge{
+    background:#eef1f8; color:var(--blue); font-weight:700; font-size:11.5px;
+    padding:7px 13px; border-radius:20px;
+  }
+  .role-badge{
+    background:#7a5230; color:white; font-weight:700; font-size:11px;
+    padding:6px 12px; border-radius:20px;
+  }
+  .avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg, var(--green), var(--blue));
+    color:white; font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .content{padding:26px 30px; flex:1;}
+
+  .readonly-note{
+    background:#eef1f8; border:1px solid #d7defd0; border:1px solid #ccd6f0;
+    border-radius:10px; padding:11px 16px; font-size:12px; color:var(--blue);
+    margin-bottom:22px;
+  }
+
+  .stats-row{display:flex; gap:16px; margin-bottom:22px;}
+  .stat-card{
+    flex:1; background:white; border:1px solid var(--border); border-radius:12px;
+    padding:18px 20px;
+  }
+  .stat-card .lbl{font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.3px; margin-bottom:8px;}
+  .stat-card .val{font-size:24px; font-weight:800; color:var(--blue);}
+  .stat-card .delta{font-size:10.5px; font-weight:700; margin-top:4px;}
+  .stat-card .delta.up{color:var(--green);}
+  .stat-card .delta.warn{color:var(--red);}
+
+  .panel{
+    background:white; border:1px solid var(--border); border-radius:12px;
+    padding:20px 22px; margin-bottom:18px;
+  }
+  .panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .panel-head h3{font-size:14.5px; color:var(--blue); font-weight:800;}
+  .panel-head .sub{font-size:11px; color:var(--muted); margin-top:2px;}
+
+  table{width:100%; border-collapse:collapse;}
+  th{
+    text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:0.4px;
+    color:var(--muted); padding:9px 10px; border-bottom:1px solid var(--border);
+  }
+  td{padding:11px 10px; font-size:12.5px; color:var(--ink); border-bottom:1px solid #f1eee3; vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+
+  .pill{
+    display:inline-block; padding:4px 10px; border-radius:20px; font-size:10.5px; font-weight:700;
+  }
+  .pill.green{ background:#e6f4ec; color:var(--green-dark); }
+  .pill.red{ background:#fbe9e6; color:var(--red); }
+  .pill.gray{ background:#eef0f3; color:var(--muted); }
+
+  .grade-big{
+    font-weight:800; font-size:13.5px; color:var(--blue);
+  }
+  .grade-big.low{ color:var(--red); }
+
+  .schedule-row{
+    display:flex; align-items:center; gap:14px; padding:10px 0; border-bottom:1px solid #f1eee3;
+  }
+  .schedule-row:last-child{ border-bottom:none; }
+  .schedule-time{ width:90px; font-size:12px; font-weight:700; color:var(--blue); flex-shrink:0; }
+  .schedule-info{ flex:1; font-size:12.5px; }
+  .schedule-info b{ color:var(--ink); }
+  .schedule-info span{ color:var(--muted); font-size:11px; display:block; margin-top:2px; }
+
+  .notice{
+    display:flex; gap:12px; padding:12px 0; border-bottom:1px solid #f1eee3;
+  }
+  .notice:last-child{ border-bottom:none; }
+  .notice .dot{
+    width:9px; height:9px; border-radius:50%; background:var(--gold); margin-top:5px; flex-shrink:0;
+  }
+  .notice .body b{ display:block; font-size:12.5px; color:var(--blue); margin-bottom:2px; }
+  .notice .body p{ font-size:11.5px; color:var(--muted); }
+  .notice .body .date{ font-size:10.5px; color:#9aa6b0; margin-top:3px; display:block; }
+
+  .att-summary{ display:flex; gap:24px; align-items:center; }
+  .att-circle{
+    width:90px; height:90px; border-radius:50%;
+    background:conic-gradient(var(--green) 0% 94%, #eef0f3 94% 100%);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .att-circle .inner{
+    width:68px; height:68px; border-radius:50%; background:white;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .att-circle .inner b{ font-size:16px; color:var(--blue); }
+  .att-circle .inner span{ font-size:9px; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand"><div class="mark"></div>CentroGE</div>
+
+    <div class="group-label">General</div>
+    <a class="active"><div class="icon"></div>Dashboard</a>
+    <a><div class="icon"></div>Mi horario</a>
+
+    <div class="group-label">Académico</div>
+    <a><div class="icon"></div>Mis notas</a>
+    <a><div class="icon"></div>Mi asistencia</a>
+
+    <div class="group-label">Centro</div>
+    <a><div class="icon"></div>Avisos</a>
+    <a><div class="icon"></div>Mi perfil</a>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Mi panel</div>
+        <div class="page-sub">Estela Micha Obama · 3º B · Colegio Santa Isabel</div>
+      </div>
+      <div class="topbar-right">
+        <div class="role-badge">Alumno</div>
+        <div class="center-badge">Curso 2025 - 2026</div>
+        <div class="avatar">EM</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="readonly-note">
+        Esta es información de solo lectura. Si encuentras algún dato incorrecto, comunícalo a tu tutor o a secretaría del centro.
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="lbl">Promedio general</div>
+          <div class="val">8.6</div>
+          <div class="delta up">2º Trimestre</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Asistencia</div>
+          <div class="val">97%</div>
+          <div class="delta up">Buen historial</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Grupo</div>
+          <div class="val">3º B</div>
+          <div class="delta up">Tutora: Aurora Bicogo</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Avisos sin leer</div>
+          <div class="val">2</div>
+          <div class="delta warn">Revisar comunicación</div>
+        </div>
+      </div>
+
+      <!-- MIS NOTAS -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Mis notas</h3>
+            <div class="sub">2º Trimestre · Curso 2025 - 2026</div>
+          </div>
+        </div>
+        <table>
+          <tr><th>Asignatura</th><th>Profesor</th><th>Nota</th><th>Estado</th></tr>
+          <tr>
+            <td>Matemáticas</td><td>Aurora Bicogo</td>
+            <td><span class="grade-big">8.6</span></td>
+            <td><span class="pill green">Aprobado</span></td>
+          </tr>
+          <tr>
+            <td>Lengua Española</td><td>Ricardo Ela</td>
+            <td><span class="grade-big">7.9</span></td>
+            <td><span class="pill green">Aprobado</span></td>
+          </tr>
+          <tr>
+            <td>Ciencias Naturales</td><td>Lucía Nsue</td>
+            <td><span class="grade-big">9.1</span></td>
+            <td><span class="pill green">Aprobado</span></td>
+          </tr>
+          <tr>
+            <td>Historia</td><td>Diosdado Mba</td>
+            <td><span class="grade-big low">4.8</span></td>
+            <td><span class="pill red">En recuperación</span></td>
+          </tr>
+          <tr>
+            <td>Inglés</td><td>Filomena Tomás</td>
+            <td><span class="grade-big">8.0</span></td>
+            <td><span class="pill green">Aprobado</span></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- ASISTENCIA -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Mi asistencia</h3>
+            <div class="sub">Resumen del trimestre actual</div>
+          </div>
+        </div>
+        <div class="att-summary">
+          <div class="att-circle"><div class="inner"><b>97%</b><span>ASISTENCIA</span></div></div>
+          <table style="flex:1;">
+            <tr><th>Mes</th><th>Días lectivos</th><th>Asistencias</th><th>Ausencias</th></tr>
+            <tr><td>Abril</td><td>20</td><td>20</td><td>0</td></tr>
+            <tr><td>Mayo</td><td>22</td><td>21</td><td>1</td></tr>
+            <tr><td>Junio</td><td>18</td><td>17</td><td>1</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- HORARIO -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Mi horario de hoy</h3>
+            <div class="sub">Lunes, 29 de junio</div>
+          </div>
+        </div>
+        <div class="schedule-row">
+          <div class="schedule-time">08:00 - 09:00</div>
+          <div class="schedule-info"><b>Matemáticas</b><span>Prof. Aurora Bicogo · Aula 12</span></div>
+        </div>
+        <div class="schedule-row">
+          <div class="schedule-time">09:00 - 10:00</div>
+          <div class="schedule-info"><b>Lengua Española</b><span>Prof. Ricardo Ela · Aula 12</span></div>
+        </div>
+        <div class="schedule-row">
+          <div class="schedule-time">10:30 - 11:30</div>
+          <div class="schedule-info"><b>Ciencias Naturales</b><span>Prof. Lucía Nsue · Laboratorio 1</span></div>
+        </div>
+        <div class="schedule-row">
+          <div class="schedule-time">11:30 - 12:30</div>
+          <div class="schedule-info"><b>Historia</b><span>Prof. Diosdado Mba · Aula 12</span></div>
+        </div>
+      </div>
+
+      <!-- AVISOS -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Avisos del centro</h3>
+            <div class="sub">Comunicados recientes de dirección y tutoría</div>
+          </div>
+        </div>
+        <div class="notice">
+          <div class="dot"></div>
+          <div class="body">
+            <b>Examen de recuperación de Historia</b>
+            <p>Se programará para la segunda semana de julio. Tu tutora se pondrá en contacto con tu familia.</p>
+            <span class="date">Hoy, 09:30</span>
+          </div>
+        </div>
+        <div class="notice">
+          <div class="dot"></div>
+          <div class="body">
+            <b>Entrega de boletines del 2º trimestre</b>
+            <p>Los boletines estarán disponibles en tu perfil a partir del 5 de julio.</p>
+            <span class="date">Ayer, 16:10</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
